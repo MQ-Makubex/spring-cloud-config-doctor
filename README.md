@@ -16,6 +16,7 @@ Large Spring Cloud repositories often contain many services with similar configu
 - Checks `spring.application.name`, `server.port`, and common Nacos config/discovery settings.
 - Detects duplicate ports across services.
 - Skips generated and documentation folders such as `target/`, `build/`, and `docs/`.
+- Supports text and JSON report output.
 - Provides CI-friendly exit codes.
 - Runs on Java 21 or newer.
 
@@ -30,6 +31,12 @@ Use `--fail-on-warn` when warnings should fail CI:
 
 ```bash
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --fail-on-warn /path/to/your/project
+```
+
+Use JSON output when another tool or CI step needs to consume the report:
+
+```bash
+java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format json /path/to/your/project
 ```
 
 ## Example output
@@ -47,7 +54,7 @@ Config files: 15
 
 This repository is intentionally small and early-stage. The first stable milestone is focused on reliable local checks for Spring Cloud Alibaba repositories. Future work may include:
 
-- JSON and SARIF output.
+- SARIF output.
 - Configurable rules.
 - Markdown reports for pull requests.
 - Spring profile awareness.
