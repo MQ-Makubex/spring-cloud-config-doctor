@@ -105,6 +105,14 @@ class ProjectScannerTest {
         assertTrue(report.findings().stream().noneMatch(finding -> finding.code().equals("YAML_PARSE_FAILED")));
     }
 
+    @Test
+    void bundledExampleProjectScansCleanly() {
+        ScanReport report = new ProjectScanner(8).scan(Path.of("examples/spring-cloud-alibaba-sample"));
+
+        assertEquals(2, report.configFiles().size());
+        assertTrue(report.findings().isEmpty());
+    }
+
     private void writeYaml(String relativePath, String content) throws IOException {
         Path path = tempDir.resolve(relativePath);
         Files.createDirectories(path.getParent());

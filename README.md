@@ -39,6 +39,12 @@ Use JSON output when another tool or CI step needs to consume the report:
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format json /path/to/your/project
 ```
 
+Try the bundled Spring Cloud Alibaba sample to verify the scanner locally:
+
+```bash
+java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar examples/spring-cloud-alibaba-sample
+```
+
 ## Example output
 
 ```text

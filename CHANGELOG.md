@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Added `--format json` for machine-readable scan reports.
+- Added a bundled Spring Cloud Alibaba sample project for local scanner smoke tests.
 
 ## 0.1.0 - 2026-05-13
 
