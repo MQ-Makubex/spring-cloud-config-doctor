@@ -1,5 +1,7 @@
 package io.github.configdoctor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +20,14 @@ final class YamlPath {
     static Optional<Integer> integerAt(Map<String, Object> document, String dottedPath) {
         return valueAt(document, dottedPath)
                 .flatMap(YamlPath::toInteger);
+    }
+
+    static Optional<List<Object>> listAt(Map<String, Object> document, String dottedPath) {
+        Optional<Object> value = valueAt(document, dottedPath);
+        if (value.isPresent() && value.orElseThrow() instanceof List<?> list) {
+            return Optional.of(new ArrayList<>(list));
+        }
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")

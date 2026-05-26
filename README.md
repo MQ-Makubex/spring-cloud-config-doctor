@@ -14,6 +14,7 @@ Large Spring Cloud repositories often contain many services with similar configu
 - Parses YAML with SnakeYAML Engine instead of line-based string matching.
 - Understands common Maven resource-filtering placeholders such as `@nacos.group@`.
 - Checks `spring.application.name`, `server.port`, and common Nacos config/discovery settings.
+- Checks configured Spring Cloud Gateway routes for missing `id`, `uri`, or predicates.
 - Detects duplicate ports across services.
 - Skips generated and documentation folders such as `target/`, `build/`, and `docs/`.
 - Supports text and JSON report output.
@@ -64,7 +65,7 @@ This repository is intentionally small and early-stage. The first stable milesto
 - Configurable rules.
 - Markdown reports for pull requests.
 - Spring profile awareness.
-- More checks for Seata, Redis, RabbitMQ, and Gateway routes.
+- More checks for Seata, Redis, RabbitMQ, and advanced Gateway route risks.
 
 ## JetBrains Open Source license note
 

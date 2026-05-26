@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Added `--format json` for machine-readable scan reports.
 - Added a bundled Spring Cloud Alibaba sample project for local scanner smoke tests.
+- Added basic Spring Cloud Gateway route checks for missing `id`, `uri`, and predicates.
 
 ## 0.1.0 - 2026-05-13
 

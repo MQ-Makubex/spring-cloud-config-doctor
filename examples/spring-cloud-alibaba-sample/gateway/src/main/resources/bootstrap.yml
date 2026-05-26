@@ -9,5 +9,11 @@ spring:
       config:
         server-addr: localhost:8848
         namespace: local
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
 server:
   port: 18080

@@ -131,6 +131,7 @@ final class ProjectScanner {
             validateServiceName(file, findings);
             validatePort(file, findings);
             validateNacos(file, findings);
+            validateGatewayRoutes(file, findings);
         }
         validateDuplicatePorts(files, findings);
     }
@@ -165,6 +166,41 @@ final class ProjectScanner {
         if (file.nacosServer().isPresent() && file.nacosNamespace().isEmpty()) {
             findings.add(new Finding(Severity.INFO, "NACOS_NAMESPACE_EMPTY", "Nacos namespace is not set; the default namespace will be used.", file.path()));
         }
+    }
+
+    private void validateGatewayRoutes(ConfigFile file, List<Finding> findings) {
+        Optional<List<Object>> routes = YamlPath.listAt(file.document(), "spring.cloud.gateway.routes");
+        if (routes.isEmpty()) {
+            return;
+        }
+
+        for (Object route : routes.orElseThrow()) {
+            if (!(route instanceof Map<?, ?> routeMap)) {
+                findings.add(new Finding(Severity.WARNING, "GATEWAY_ROUTE_INVALID", "Gateway route entry should be a YAML object.", file.path()));
+                continue;
+            }
+
+            Object id = routeMap.get("id");
+            Object uri = routeMap.get("uri");
+            Object predicates = routeMap.get("predicates");
+            String routeName = id == null || id.toString().isBlank() ? "<unnamed>" : id.toString().trim();
+            if (id == null || id.toString().isBlank()) {
+                findings.add(new Finding(Severity.WARNING, "GATEWAY_ROUTE_ID_MISSING", "Gateway route is missing id.", file.path()));
+            }
+            if (uri == null || uri.toString().isBlank()) {
+                findings.add(new Finding(Severity.WARNING, "GATEWAY_ROUTE_URI_MISSING", "Gateway route " + routeName + " is missing uri.", file.path()));
+            }
+            if (!hasPredicates(predicates)) {
+                findings.add(new Finding(Severity.WARNING, "GATEWAY_ROUTE_PREDICATES_MISSING", "Gateway route " + routeName + " has no predicates.", file.path()));
+            }
+        }
+    }
+
+    private static boolean hasPredicates(Object predicates) {
+        if (predicates instanceof List<?> list) {
+            return !list.isEmpty();
+        }
+        return predicates != null && !predicates.toString().isBlank();
     }
 
     private void validateDuplicatePorts(List<ConfigFile> files, List<Finding> findings) {

@@ -83,6 +83,55 @@ class ProjectScannerTest {
     }
 
     @Test
+    void warnsWhenGatewayRouteHasNoUri() throws IOException {
+        writeYaml("gateway/src/main/resources/bootstrap.yml", """
+                spring:
+                  application:
+                    name: gateway
+                  cloud:
+                    nacos:
+                      config:
+                        server-addr: localhost:8848
+                        namespace: saas
+                    gateway:
+                      routes:
+                        - id: order-service
+                          predicates:
+                            - Path=/orders/**
+                server:
+                  port: 18080
+                """);
+
+        ScanReport report = new ProjectScanner(8).scan(tempDir);
+
+        assertTrue(report.findings().stream().anyMatch(finding -> finding.code().equals("GATEWAY_ROUTE_URI_MISSING")));
+    }
+
+    @Test
+    void warnsWhenGatewayRouteHasNoIdOrPredicates() throws IOException {
+        writeYaml("gateway/src/main/resources/bootstrap.yml", """
+                spring:
+                  application:
+                    name: gateway
+                  cloud:
+                    nacos:
+                      config:
+                        server-addr: localhost:8848
+                        namespace: saas
+                    gateway:
+                      routes:
+                        - uri: lb://order-service
+                server:
+                  port: 18080
+                """);
+
+        ScanReport report = new ProjectScanner(8).scan(tempDir);
+
+        assertTrue(report.findings().stream().anyMatch(finding -> finding.code().equals("GATEWAY_ROUTE_ID_MISSING")));
+        assertTrue(report.findings().stream().anyMatch(finding -> finding.code().equals("GATEWAY_ROUTE_PREDICATES_MISSING")));
+    }
+
+    @Test
     void acceptsMavenFilteredYamlPlaceholders() throws IOException {
         writeYaml("goods-service/src/main/resources/bootstrap.yml", """
                 spring:
