@@ -17,7 +17,7 @@ Large Spring Cloud repositories often contain many services with similar configu
 - Checks configured Spring Cloud Gateway routes for missing `id`, `uri`, or predicates.
 - Detects duplicate ports across services.
 - Skips generated and documentation folders such as `target/`, `build/`, and `docs/`.
-- Supports text and JSON report output.
+- Supports text, JSON, and SARIF report output.
 - Provides CI-friendly exit codes.
 - Runs on Java 21 or newer.
 
@@ -38,6 +38,12 @@ Use JSON output when another tool or CI step needs to consume the report:
 
 ```bash
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format json /path/to/your/project
+```
+
+Use SARIF output when a code scanning workflow needs standard static-analysis results:
+
+```bash
+java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format sarif /path/to/your/project
 ```
 
 Try the bundled Spring Cloud Alibaba sample to verify the scanner locally:
@@ -61,7 +67,6 @@ Config files: 15
 
 This repository is intentionally small and early-stage. The first stable milestone is focused on reliable local checks for Spring Cloud Alibaba repositories. Future work may include:
 
-- SARIF output.
 - Configurable rules.
 - Markdown reports for pull requests.
 - Spring profile awareness.

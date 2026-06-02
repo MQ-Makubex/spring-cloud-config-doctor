@@ -2,7 +2,8 @@ package io.github.configdoctor;
 
 enum OutputFormat {
     TEXT,
-    JSON;
+    JSON,
+    SARIF;
 
     static OutputFormat from(String value) {
         for (OutputFormat format : values()) {
@@ -10,6 +11,6 @@ enum OutputFormat {
                 return format;
             }
         }
-        throw new IllegalArgumentException("Unsupported output format: " + value + ". Expected text or json.");
+        throw new IllegalArgumentException("Unsupported output format: " + value + ". Expected text, json, or sarif.");
     }
 }

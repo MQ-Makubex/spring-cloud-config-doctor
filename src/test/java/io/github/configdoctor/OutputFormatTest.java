@@ -11,6 +11,7 @@ class OutputFormatTest {
     void acceptsLowercaseNames() {
         assertEquals(OutputFormat.TEXT, OutputFormat.from("text"));
         assertEquals(OutputFormat.JSON, OutputFormat.from("json"));
+        assertEquals(OutputFormat.SARIF, OutputFormat.from("sarif"));
     }
 
     @Test

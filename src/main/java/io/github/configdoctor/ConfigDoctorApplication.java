@@ -25,7 +25,7 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
     @Option(names = "--max-depth", defaultValue = "8", description = "Maximum directory depth to scan.")
     private int maxDepth;
 
-    @Option(names = "--format", defaultValue = "text", description = "Output format: text or json.")
+    @Option(names = "--format", defaultValue = "text", description = "Output format: text, json, or sarif.")
     private String format;
 
     private final PrintWriter out;
@@ -49,6 +49,7 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
         switch (OutputFormat.from(format)) {
             case TEXT -> new ReportRenderer(out).render(report);
             case JSON -> new JsonReportRenderer(out).render(report);
+            case SARIF -> new SarifReportRenderer(out).render(report);
         }
 
         if (report.hasErrors()) {
