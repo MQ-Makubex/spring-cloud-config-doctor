@@ -155,6 +155,43 @@ class ProjectScannerTest {
     }
 
     @Test
+    void warnsWhenEnabledSeataHasNoTransactionServiceGroup() throws IOException {
+        writeYaml("order-service/src/main/resources/application.yml", """
+                spring:
+                  application:
+                    name: order-service
+                seata:
+                  enabled: true
+                server:
+                  port: 11115
+                """);
+
+        ScanReport report = new ProjectScanner(8).scan(tempDir);
+
+        assertTrue(report.findings().stream()
+                .anyMatch(finding -> finding.code().equals("SEATA_TX_SERVICE_GROUP_MISSING")));
+    }
+
+    @Test
+    void acceptsEnabledSeataWithTransactionServiceGroup() throws IOException {
+        writeYaml("order-service/src/main/resources/application.yml", """
+                spring:
+                  application:
+                    name: order-service
+                seata:
+                  enabled: true
+                  tx-service-group: order-service-group
+                server:
+                  port: 11115
+                """);
+
+        ScanReport report = new ProjectScanner(8).scan(tempDir);
+
+        assertTrue(report.findings().stream()
+                .noneMatch(finding -> finding.code().equals("SEATA_TX_SERVICE_GROUP_MISSING")));
+    }
+
+    @Test
     void bundledExampleProjectScansCleanly() {
         ScanReport report = new ProjectScanner(8).scan(Path.of("examples/spring-cloud-alibaba-sample"));
 

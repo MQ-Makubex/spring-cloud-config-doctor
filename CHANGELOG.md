@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Added `--format sarif` for code scanning compatible scan reports.
 - Added a bundled Spring Cloud Alibaba sample project for local scanner smoke tests.
 - Added basic Spring Cloud Gateway route checks for missing `id`, `uri`, and predicates.
+- Added a Seata check for enabled services missing `tx-service-group`.
+- Documented CLI options, exit codes, and GitHub Actions SARIF upload setup.
 
 ## 0.1.0 - 2026-05-13
 

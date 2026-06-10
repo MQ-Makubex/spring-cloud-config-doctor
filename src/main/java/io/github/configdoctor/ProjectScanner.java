@@ -132,6 +132,7 @@ final class ProjectScanner {
             validatePort(file, findings);
             validateNacos(file, findings);
             validateGatewayRoutes(file, findings);
+            validateSeata(file, findings);
         }
         validateDuplicatePorts(files, findings);
     }
@@ -201,6 +202,27 @@ final class ProjectScanner {
             return !list.isEmpty();
         }
         return predicates != null && !predicates.toString().isBlank();
+    }
+
+    private void validateSeata(ConfigFile file, List<Finding> findings) {
+        boolean enabled = firstPresent(
+                YamlPath.booleanAt(file.document(), "seata.enabled"),
+                YamlPath.booleanAt(file.document(), "spring.cloud.alibaba.seata.enabled"))
+                .orElse(false);
+        if (!enabled) {
+            return;
+        }
+
+        Optional<String> transactionServiceGroup = firstPresent(
+                YamlPath.stringAt(file.document(), "seata.tx-service-group"),
+                YamlPath.stringAt(file.document(), "spring.cloud.alibaba.seata.tx-service-group"));
+        if (transactionServiceGroup.isEmpty()) {
+            findings.add(new Finding(
+                    Severity.WARNING,
+                    "SEATA_TX_SERVICE_GROUP_MISSING",
+                    "Seata is enabled but tx-service-group is missing.",
+                    file.path()));
+        }
     }
 
     private void validateDuplicatePorts(List<ConfigFile> files, List<Finding> findings) {

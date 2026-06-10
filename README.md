@@ -15,6 +15,7 @@ Large Spring Cloud repositories often contain many services with similar configu
 - Understands common Maven resource-filtering placeholders such as `@nacos.group@`.
 - Checks `spring.application.name`, `server.port`, and common Nacos config/discovery settings.
 - Checks configured Spring Cloud Gateway routes for missing `id`, `uri`, or predicates.
+- Warns when Seata is enabled without a `tx-service-group`.
 - Detects duplicate ports across services.
 - Skips generated and documentation folders such as `target/`, `build/`, and `docs/`.
 - Supports text, JSON, and SARIF report output.
@@ -51,6 +52,67 @@ Try the bundled Spring Cloud Alibaba sample to verify the scanner locally:
 ```bash
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar examples/spring-cloud-alibaba-sample
 ```
+
+## CLI reference
+
+```text
+config-doctor [--fail-on-warn] [--format=<format>] [--max-depth=<depth>] [ROOT]
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `ROOT` | `.` | Project root to scan. |
+| `--format` | `text` | Report format: `text`, `json`, or `sarif`. |
+| `--max-depth` | `8` | Maximum directory depth to scan. |
+| `--fail-on-warn` | disabled | Return exit code `2` when warnings are found. |
+| `-h`, `--help` | | Show command help. |
+| `-V`, `--version` | | Show the application version. |
+
+Exit codes are stable for CI use:
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | No errors were found, and warnings are allowed. |
+| `1` | At least one error was found. |
+| `2` | Warnings were found while `--fail-on-warn` was enabled. |
+
+## GitHub Actions with SARIF
+
+The SARIF report can be uploaded to GitHub code scanning:
+
+```yaml
+name: Config Doctor
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - run: mvn -B package
+      - name: Scan configuration
+        run: java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format sarif . > config-doctor.sarif
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: config-doctor.sarif
+```
+
+The scan step returns a non-zero exit code when errors are found. Add `continue-on-error: true` to that step when code scanning should upload findings without failing the job immediately.
 
 ## Example output
 

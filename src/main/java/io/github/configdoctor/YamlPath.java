@@ -22,6 +22,11 @@ final class YamlPath {
                 .flatMap(YamlPath::toInteger);
     }
 
+    static Optional<Boolean> booleanAt(Map<String, Object> document, String dottedPath) {
+        return valueAt(document, dottedPath)
+                .flatMap(YamlPath::toBoolean);
+    }
+
     static Optional<List<Object>> listAt(Map<String, Object> document, String dottedPath) {
         Optional<Object> value = valueAt(document, dottedPath);
         if (value.isPresent() && value.orElseThrow() instanceof List<?> list) {
@@ -54,5 +59,19 @@ final class YamlPath {
         } catch (NumberFormatException ex) {
             return Optional.empty();
         }
+    }
+
+    private static Optional<Boolean> toBoolean(Object value) {
+        if (value instanceof Boolean booleanValue) {
+            return Optional.of(booleanValue);
+        }
+        String text = value.toString().trim();
+        if (text.equalsIgnoreCase("true")) {
+            return Optional.of(true);
+        }
+        if (text.equalsIgnoreCase("false")) {
+            return Optional.of(false);
+        }
+        return Optional.empty();
     }
 }
