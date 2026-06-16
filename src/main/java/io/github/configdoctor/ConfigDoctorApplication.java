@@ -2,7 +2,11 @@ package io.github.configdoctor;
 
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -28,6 +32,12 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
     @Option(names = "--format", defaultValue = "text", description = "Output format: text, json, or sarif.")
     private String format;
 
+    @Option(
+            names = "--ignore-code",
+            split = ",",
+            description = "Finding code to ignore. Repeat or use commas, for example: --ignore-code NACOS_NAMESPACE_EMPTY,DUPLICATE_PORT.")
+    private List<String> ignoredCodes = List.of();
+
     private final PrintWriter out;
 
     public ConfigDoctorApplication() {
@@ -45,7 +55,8 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        ScanReport report = new ProjectScanner(maxDepth).scan(root);
+        ScanReport report = new ProjectScanner(maxDepth).scan(root)
+                .withoutFindingsWithCodes(normalizedIgnoredCodes());
         switch (OutputFormat.from(format)) {
             case TEXT -> new ReportRenderer(out).render(report);
             case JSON -> new JsonReportRenderer(out).render(report);
@@ -59,5 +70,13 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
             return 2;
         }
         return 0;
+    }
+
+    private Set<String> normalizedIgnoredCodes() {
+        return ignoredCodes.stream()
+                .map(String::trim)
+                .filter(code -> !code.isEmpty())
+                .map(code -> code.toUpperCase(Locale.ROOT))
+                .collect(Collectors.toSet());
     }
 }

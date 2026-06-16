@@ -17,6 +17,7 @@ Large Spring Cloud repositories often contain many services with similar configu
 - Checks configured Spring Cloud Gateway routes for missing `id`, `uri`, or predicates.
 - Warns when Seata is enabled without a `tx-service-group`.
 - Detects duplicate ports across services.
+- Allows specific finding codes to be ignored during gradual CI rollout.
 - Skips generated and documentation folders such as `target/`, `build/`, and `docs/`.
 - Supports text, JSON, and SARIF report output.
 - Provides CI-friendly exit codes.
@@ -47,6 +48,12 @@ Use SARIF output when a code scanning workflow needs standard static-analysis re
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --format sarif /path/to/your/project
 ```
 
+Ignore a known finding code when a repository needs a gradual rollout:
+
+```bash
+java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --ignore-code NACOS_NAMESPACE_EMPTY /path/to/your/project
+```
+
 Try the bundled Spring Cloud Alibaba sample to verify the scanner locally:
 
 ```bash
@@ -56,13 +63,14 @@ java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar examples/spring-c
 ## CLI reference
 
 ```text
-config-doctor [--fail-on-warn] [--format=<format>] [--max-depth=<depth>] [ROOT]
+config-doctor [--fail-on-warn] [--format=<format>] [--ignore-code=<code>[,<code>...]] [--max-depth=<depth>] [ROOT]
 ```
 
 | Option | Default | Description |
 | --- | --- | --- |
 | `ROOT` | `.` | Project root to scan. |
 | `--format` | `text` | Report format: `text`, `json`, or `sarif`. |
+| `--ignore-code` | none | Finding code to ignore before rendering and exit-code calculation. Can be repeated or comma-separated. |
 | `--max-depth` | `8` | Maximum directory depth to scan. |
 | `--fail-on-warn` | disabled | Return exit code `2` when warnings are found. |
 | `-h`, `--help` | | Show command help. |

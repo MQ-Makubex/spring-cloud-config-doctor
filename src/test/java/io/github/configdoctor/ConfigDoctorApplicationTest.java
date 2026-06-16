@@ -39,6 +39,24 @@ class ConfigDoctorApplicationTest {
         assertTrue(buffer.toString().contains("\"uri\": \"gateway/src/main/resources/bootstrap.yml\""));
     }
 
+    @Test
+    void ignoresConfiguredFindingCodesBeforeRenderingAndExitCode() throws IOException {
+        writeYaml("gateway/src/main/resources/application.yml", """
+                spring:
+                  application:
+                    name: gateway
+                server:
+                  port: 80
+                """);
+        StringWriter buffer = new StringWriter();
+
+        int exitCode = new CommandLine(new ConfigDoctorApplication(new PrintWriter(buffer)))
+                .execute("--ignore-code", "port_range", tempDir.toString());
+
+        assertEquals(0, exitCode);
+        assertTrue(buffer.toString().contains("No findings. Configuration looks healthy."));
+    }
+
     private void writeYaml(String relativePath, String content) throws IOException {
         Path path = tempDir.resolve(relativePath);
         Files.createDirectories(path.getParent());
