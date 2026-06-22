@@ -84,6 +84,28 @@ Exit codes are stable for CI use:
 | `1` | At least one error was found. |
 | `2` | Warnings were found while `--fail-on-warn` was enabled. |
 
+## Finding codes
+
+Use these codes with `--ignore-code` when a repository needs to suppress a known finding during a gradual rollout.
+
+| Code | Severity | Meaning |
+| --- | --- | --- |
+| `ROOT_NOT_FOUND` | Error | The scan root does not exist or is not a directory. |
+| `SCAN_FAILED` | Error | The scanner could not walk the project tree. |
+| `YAML_PARSE_FAILED` | Error | A YAML configuration file could not be parsed. |
+| `PORT_RANGE` | Error | `server.port` is outside the supported `1024` to `65535` range. |
+| `NO_CONFIG_FILES` | Warning | No `application*.yml`, `application*.yaml`, `bootstrap*.yml`, or `bootstrap*.yaml` files were found. |
+| `SERVICE_NAME_MISSING` | Warning | `spring.application.name` is missing. |
+| `SERVICE_NAME_FORMAT` | Warning | `spring.application.name` is not lower-kebab-case. |
+| `NACOS_SERVER_MISSING` | Warning | A bootstrap config is missing a Nacos server address. |
+| `GATEWAY_ROUTE_INVALID` | Warning | A Gateway route entry is not a YAML object. |
+| `GATEWAY_ROUTE_ID_MISSING` | Warning | A Gateway route is missing `id`. |
+| `GATEWAY_ROUTE_URI_MISSING` | Warning | A Gateway route is missing `uri`. |
+| `GATEWAY_ROUTE_PREDICATES_MISSING` | Warning | A Gateway route has no predicates. |
+| `SEATA_TX_SERVICE_GROUP_MISSING` | Warning | Seata is enabled without `tx-service-group`. |
+| `DUPLICATE_PORT` | Warning | Multiple config files use the same `server.port`. |
+| `NACOS_NAMESPACE_EMPTY` | Info | Nacos is configured without an explicit namespace. |
+
 ## GitHub Actions with SARIF
 
 The SARIF report can be uploaded to GitHub code scanning:
