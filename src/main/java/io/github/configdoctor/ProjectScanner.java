@@ -21,9 +21,17 @@ final class ProjectScanner {
     private static final Pattern SERVICE_NAME = Pattern.compile("[a-z][a-z0-9-]*");
 
     private final int maxDepth;
+    private final int minPort;
+    private final int maxPort;
 
     ProjectScanner(int maxDepth) {
+        this(maxDepth, 1024, 65535);
+    }
+
+    ProjectScanner(int maxDepth, int minPort, int maxPort) {
         this.maxDepth = Math.max(1, maxDepth);
+        this.minPort = minPort;
+        this.maxPort = maxPort;
     }
 
     ScanReport scan(Path root) {
@@ -154,8 +162,8 @@ final class ProjectScanner {
 
     private void validatePort(ConfigFile file, List<Finding> findings) {
         file.serverPort().ifPresent(port -> {
-            if (port < 1024 || port > 65535) {
-                findings.add(new Finding(Severity.ERROR, "PORT_RANGE", "server.port must be between 1024 and 65535.", file.path()));
+            if (port < minPort || port > maxPort) {
+                findings.add(new Finding(Severity.ERROR, "PORT_RANGE", "server.port must be between " + minPort + " and " + maxPort + ".", file.path()));
             }
         });
     }

@@ -57,6 +57,42 @@ class ConfigDoctorApplicationTest {
         assertTrue(buffer.toString().contains("No findings. Configuration looks healthy."));
     }
 
+    @Test
+    void allowsConfiguredMinimumServerPort() throws IOException {
+        writeYaml("gateway/src/main/resources/application.yml", """
+                spring:
+                  application:
+                    name: gateway
+                server:
+                  port: 80
+                """);
+        StringWriter buffer = new StringWriter();
+
+        int exitCode = new CommandLine(new ConfigDoctorApplication(new PrintWriter(buffer)))
+                .execute("--min-port", "1", tempDir.toString());
+
+        assertEquals(0, exitCode);
+        assertTrue(buffer.toString().contains("No findings. Configuration looks healthy."));
+    }
+
+    @Test
+    void reportsPortsAboveConfiguredMaximum() throws IOException {
+        writeYaml("gateway/src/main/resources/application.yml", """
+                spring:
+                  application:
+                    name: gateway
+                server:
+                  port: 20000
+                """);
+        StringWriter buffer = new StringWriter();
+
+        int exitCode = new CommandLine(new ConfigDoctorApplication(new PrintWriter(buffer)))
+                .execute("--max-port", "19999", tempDir.toString());
+
+        assertEquals(1, exitCode);
+        assertTrue(buffer.toString().contains("PORT_RANGE"));
+    }
+
     private void writeYaml(String relativePath, String content) throws IOException {
         Path path = tempDir.resolve(relativePath);
         Files.createDirectories(path.getParent());

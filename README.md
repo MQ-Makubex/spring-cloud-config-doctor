@@ -54,6 +54,12 @@ Ignore a known finding code when a repository needs a gradual rollout:
 java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --ignore-code NACOS_NAMESPACE_EMPTY /path/to/your/project
 ```
 
+Adjust the allowed `server.port` range when a repository intentionally uses privileged or project-specific ports:
+
+```bash
+java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar --min-port 1 --max-port 19999 /path/to/your/project
+```
+
 Try the bundled Spring Cloud Alibaba sample to verify the scanner locally:
 
 ```bash
@@ -63,7 +69,7 @@ java -jar target/spring-cloud-config-doctor-0.1.0-SNAPSHOT.jar examples/spring-c
 ## CLI reference
 
 ```text
-config-doctor [--fail-on-warn] [--format=<format>] [--ignore-code=<code>[,<code>...]] [--max-depth=<depth>] [ROOT]
+config-doctor [--fail-on-warn] [--format=<format>] [--ignore-code=<code>[,<code>...]] [--max-depth=<depth>] [--min-port=<port>] [--max-port=<port>] [ROOT]
 ```
 
 | Option | Default | Description |
@@ -72,6 +78,8 @@ config-doctor [--fail-on-warn] [--format=<format>] [--ignore-code=<code>[,<code>
 | `--format` | `text` | Report format: `text`, `json`, or `sarif`. |
 | `--ignore-code` | none | Finding code to ignore before rendering and exit-code calculation. Can be repeated or comma-separated. |
 | `--max-depth` | `8` | Maximum directory depth to scan. |
+| `--min-port` | `1024` | Minimum allowed `server.port` value. |
+| `--max-port` | `65535` | Maximum allowed `server.port` value. |
 | `--fail-on-warn` | disabled | Return exit code `2` when warnings are found. |
 | `-h`, `--help` | | Show command help. |
 | `-V`, `--version` | | Show the application version. |

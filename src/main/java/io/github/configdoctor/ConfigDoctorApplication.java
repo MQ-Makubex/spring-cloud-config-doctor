@@ -29,6 +29,12 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
     @Option(names = "--max-depth", defaultValue = "8", description = "Maximum directory depth to scan.")
     private int maxDepth;
 
+    @Option(names = "--min-port", defaultValue = "1024", description = "Minimum allowed server.port value.")
+    private int minPort;
+
+    @Option(names = "--max-port", defaultValue = "65535", description = "Maximum allowed server.port value.")
+    private int maxPort;
+
     @Option(names = "--format", defaultValue = "text", description = "Output format: text, json, or sarif.")
     private String format;
 
@@ -55,7 +61,7 @@ public final class ConfigDoctorApplication implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        ScanReport report = new ProjectScanner(maxDepth).scan(root)
+        ScanReport report = new ProjectScanner(maxDepth, minPort, maxPort).scan(root)
                 .withoutFindingsWithCodes(normalizedIgnoredCodes());
         switch (OutputFormat.from(format)) {
             case TEXT -> new ReportRenderer(out).render(report);
